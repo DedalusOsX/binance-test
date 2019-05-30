@@ -21,8 +21,8 @@ const binanceRest = new api.BinanceRest({
      */
 });
 
-const SYMBOL = process.SYMBOL || 'HOTUSDT';
-const ENTRY_PRICE = process.PRICE || 0.002140;
+const SYMBOL = process.ENV.SYMBOL || 'HOTUSDT';
+const ENTRY_PRICE = process.ENV.PRICE || 0.002140;
 
 
 class Base {
