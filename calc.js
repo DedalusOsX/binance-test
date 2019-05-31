@@ -1,5 +1,6 @@
 const api = require('binance');
 const fs = require('fs');
+const moment = require('moment');
 const _ = require('lodash');
 const Slack = require('./slackNotify');
 
@@ -32,7 +33,8 @@ class Base {
         this.x = ENTRY_PRICE;
         this.y = 0;
         this.z = 0;
-        this.notified = false;
+        this.cp = 0;
+        this.buffer = [];
         this.path = `./data/${SYMBOL}.json`;
         this.getData = this.getData.bind(this);
     }
@@ -59,17 +61,17 @@ class Base {
         if (this.y >= (this.x + ENTRY_PRICE)) {
             this.x = this.y / ENTRY_PRICE
         }
-        else if (this.z <= (this.x - ENTRY_PRICE)) {
+        if (this.z <= (this.x - ENTRY_PRICE)) {
             this.x = this.z / ENTRY_PRICE;
         }
     }
 
     async getData() {
         const r = await binanceRest.tickerPrice({symbol: SYMBOL});
-        console.log('r', r);
         const d = {d: Date.now(), p: parseFloat(r.price)};
         if (!this.y) this.y = d.p;
         if (!this.z) this.z = d.p;
+        if (!this.cp) this.cp = d.p;
         if (!fs.existsSync(this.path)) {
             fs.writeFileSync(this.path, JSON.stringify([d]));
         }
@@ -85,16 +87,25 @@ class Base {
     }
 
     checkPrices(price) {
-        Slack.sendInfo(`x:${this.x.toFixed(5)}, y:${this.y.toFixed(5)}, z:${this.z.toFixed(5)}, p:${price.toFixed(5)}`, 'algocheck');
+        const res = `${moment().format('YYYY-MM-DD HH:mm:ss')} -- x:${this.x.toFixed(5)}, y:${this.y.toFixed(5)}, z:${this.z.toFixed(5)}, p:${price.toFixed(5)}, cp:${this.cp}`;
+        console.log(res);
+        this.buffer.push(res);
+        if(this.buffer.length === 15){
+            Slack.sendInfo(this.buffer.join('\n'), 'algocheck');
+            this.buffer = [];
+        }
 
-        if ((this.x * 0.96) < this.z <= (this.x * 0.98)) {
-            Slack.sendInfo(`${SYMBOL} Price drop 10% price:${this.x}`)
+        if ( ((this.x * 0.96) < this.z <= (this.x * 0.98)) && (this.cp !== price)) {
+            Slack.sendInfo(`${SYMBOL} Price drop 10% ${res}`);
+            this.cp = price;
         }
-        else if ((this.x * 0.94) < this.z <= (this.x * 0.96)) {
-            Slack.sendWarning(`${SYMBOL} Price drop 20% price:${this.x}`)
+        else if ( ((this.x * 0.94) < this.z <= (this.x * 0.96)) ) {
+            Slack.sendWarning(`${SYMBOL} Price drop 20% ${res}`);
+            this.cp = price;
         }
-        else if (this.z <= (this.x * 0.94)) {
-            Slack.sendAlert(`${SYMBOL} Price drop 30% price:${this.x}`)
+        else if ( (this.z <= (this.x * 0.94)) ) {
+            Slack.sendAlert(`${SYMBOL} Price drop 30% ${res}`);
+            this.cp = price;
         }
     }
 }

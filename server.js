@@ -1,9 +1,8 @@
-// CALL THE PACKAGES --------------------
 const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const Base = require('./calc');
-
+process.env.TZ = 'UTC';
 const port = process.env.PORT || 8080;
 
 
