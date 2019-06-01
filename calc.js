@@ -34,6 +34,7 @@ class Base {
         this.y = 0;
         this.z = 0;
         this.cp = 0;
+        this.hx = 0;
         this.buffer = [];
         this.path = `./data/${SYMBOL}.json`;
         this.getData = this.getData.bind(this);
@@ -64,7 +65,10 @@ class Base {
         if (this.z <= (this.x - ENTRY_PRICE)) {
             this.x = this.z / ENTRY_PRICE;
         }
-        Slack.sendInfo(`Current Price is : ${this.x} AND you just hit ${this.x/ENTRY_PRICE}x`);
+        if(this.x !== this.hx){
+            Slack.sendInfo(`Current Price is : ${this.x} AND you just hit ${this.x/ENTRY_PRICE}x`);
+            this.hx = this.x;
+        }
     }
 
     async getData() {
