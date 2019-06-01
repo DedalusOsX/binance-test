@@ -96,15 +96,15 @@ class Base {
             this.buffer = [];
         }
 
-        if ( ((this.x * 0.96) < this.z <= (this.x * 0.98)) && (this.cp !== price)) {
+        if ( ((this.x * 0.8) < this.z <= (this.x * 0.9)) && (this.cp !== price)) {
             Slack.sendInfo(`${SYMBOL} Price drop 10% ${res}`);
             this.cp = price;
         }
-        else if ( ((this.x * 0.94) < this.z <= (this.x * 0.96)) ) {
+        else if ( ((this.x * 0.7) < this.z <= (this.x * 0.8)) ) {
             Slack.sendWarning(`${SYMBOL} Price drop 20% ${res}`);
             this.cp = price;
         }
-        else if ( (this.z <= (this.x * 0.94)) ) {
+        else if ( (this.z <= (this.x * 0.7)) ) {
             Slack.sendAlert(`${SYMBOL} Price drop 30% ${res}`);
             this.cp = price;
         }
