@@ -22,8 +22,8 @@ const binanceRest = new api.BinanceRest({
      */
 });
 
-const SYMBOL = process.env.SYMBOL || 'HOTUSDT';
-const ENTRY_PRICE = process.env.PRICE || 0.002140;
+const SYMBOL = process.env.SYMBOL || 'ONEUSDT';
+const ENTRY_PRICE = process.env.PRICE || 0.02;
 
 
 class Base {
@@ -59,11 +59,12 @@ class Base {
 
     calcX() {
         if (this.y >= (this.x + ENTRY_PRICE)) {
-            this.x = this.y / ENTRY_PRICE
+            this.x = this.y / ENTRY_PRICE;
         }
         if (this.z <= (this.x - ENTRY_PRICE)) {
             this.x = this.z / ENTRY_PRICE;
         }
+        Slack.sendInfo(`Current Price is : ${this.x} AND you just hit ${this.x/ENTRY_PRICE}x`);
     }
 
     async getData() {
