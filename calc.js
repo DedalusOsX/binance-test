@@ -23,7 +23,7 @@ const binanceRest = new api.BinanceRest({
 });
 
 const SYMBOL = process.env.SYMBOL || 'ONEUSDT';
-const ENTRY_PRICE = process.env.PRICE || 0.02;
+const ENTRY_PRICE = process.env.PRICE || 0.03;
 
 
 class Base {
