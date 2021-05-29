@@ -18,7 +18,7 @@
     "mongoose": "^5.4.17",
     "morgan": "^1.9.1",
     "slack-notify": "^0.1.7",
-    "ws": "^7.0.0"
+    "ws": "^7.4.6"
   },
   "devDependencies": {}
 }
